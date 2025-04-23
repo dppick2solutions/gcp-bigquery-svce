@@ -58,4 +58,11 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
     available_memory    = "256M"
     timeout_seconds     = 60
   }
+  event_trigger {
+    event_type = "google.cloud.storage.object.v1.finalized"
+    event_filters {
+      attribute = "bucket"
+      value = google_storage_bucket.rawfiles.name
+    }
+  }
 }
