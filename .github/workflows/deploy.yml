@@ -90,8 +90,8 @@ jobs:
 
       - name: Build and Push BQ Import Container
         run: |-
-          docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}" -f Import_BQ.Dockerfile ./
-          docker push "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}"
+          docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/gcs-to-bq:${{ github.sha }}" -f Import_BQ.Dockerfile ./
+          docker push "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/gcs-to-bq:${{ github.sha }}"
 
   terraform:
     name: Terraform Workflow

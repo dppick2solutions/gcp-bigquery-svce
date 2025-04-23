@@ -67,6 +67,32 @@
 #   }
 #   depends_on = [google_storage_bucket_iam_member.eventarc_bucket_permissions, google_storage_bucket_object.gcs_to_bigquery_zip]
 # }
+resource "google_cloud_run_v2_service" "azure_to_gcs" {
+  name     = "azure-to-gcs"
+  location = "us-central1"
+  deletion_protection = false
+  ingress = "INGRESS_TRAFFIC_ALL"
+
+  template {
+    containers {
+      image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/azure-to-gcs:latest"
+    }
+  }
+}
+
+resource "google_cloud_run_v2_job" "gcs_to_bq" {
+  name     = "gcs-to-bq"
+  location = "us-central1"
+  deletion_protection = false
+
+  template {
+    template {
+      containers {
+        image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/gcs-to-bq:latest"
+      }
+    }
+  }
+}
 
 # Define the storage bucket and the service account for Eventarc
 resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
