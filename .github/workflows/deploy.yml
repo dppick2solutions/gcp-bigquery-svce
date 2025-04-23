@@ -82,6 +82,7 @@ jobs:
             TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
   import-csv:
     runs-on: ubuntu-latest
+    needs: terraform 
 
     steps:
       - name: Checkout repository
@@ -104,6 +105,7 @@ jobs:
           MSSQL_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
         run: |
           python <<EOF
+          import os
           import pandas as pd
           import pyodbc
 
