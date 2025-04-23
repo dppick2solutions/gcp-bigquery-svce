@@ -12,7 +12,7 @@ def export_to_gcs(request):
 
         # Fetch Azure SQL connection details from environment variables
         server = os.getenv('AZURE_SQL_SERVER')
-        database = os.getenv('AZURE_SQL_DB')
+        database = os.getenv('AZURE_SQL_DATABASE')
         username = os.getenv('AZURE_SQL_USER')
         password = os.getenv('AZURE_SQL_PASSWORD')
         bucket_name = os.getenv('TARGET_BUCKET')
