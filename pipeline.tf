@@ -27,35 +27,40 @@ resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
 # Deploy the export function that pulls from Azure SQL and writes to GCS
 
 
-resource "google_cloudfunctions2_function" "export_to_gcs" {
-  name        = "export-sql-to-gcs"
-  location    = "us-central1"
-  description = "Exports Azure SQL data to a GCS bucket"
+# resource "google_cloudfunctions2_function" "export_to_gcs" {
+#   name        = "export-sql-to-gcs"
+#   location    = "us-central1"
+#   description = "Exports Azure SQL data to a GCS bucket"
 
-  build_config {
-    runtime     = "python312"
-    entry_point = "export_to_gcs"
-    environment_variables = {
-      AZURE_SQL_SERVER   = "${var.sql_server_name}.database.windows.net"
-      AZURE_SQL_DATABASE = var.sql_db_name
-      AZURE_SQL_USER     = var.sql_admin_username
-      AZURE_SQL_PASSWORD = var.sql_admin_password
-      TARGET_BUCKET      = var.gcp_bucket_name
-    }
-    source {
-      storage_source {
-        bucket = google_storage_bucket.rawfiles.name
-        object = google_storage_bucket_object.export_to_gcs_zip.name
-      }
-    }
-  }
+#   build_config {
+#     runtime     = "python312"
+#     entry_point = "export_to_gcs"
+#     environment_variables = {
+#       AZURE_SQL_SERVER   = "${var.sql_server_name}.database.windows.net"
+#       AZURE_SQL_DATABASE = var.sql_db_name
+#       AZURE_SQL_USER     = var.sql_admin_username
+#       AZURE_SQL_PASSWORD = var.sql_admin_password
+#       TARGET_BUCKET      = var.gcp_bucket_name
+#     }
+#     source {
+#       storage_source {
+#         bucket = google_storage_bucket.rawfiles.name
+#         object = google_storage_bucket_object.export_to_gcs_zip.name
+#       }
+#     }
+#   }
 
-  service_config {
-    max_instance_count = 1
-    available_memory   = "256M"
-    timeout_seconds    = 60
-  }
-  depends_on = [google_storage_bucket_object.export_to_gcs_zip]
+#   service_config {
+#     max_instance_count = 1
+#     available_memory   = "256M"
+#     timeout_seconds    = 60
+#   }
+#   depends_on = [google_storage_bucket_object.export_to_gcs_zip]
+# }
+
+resource "google_container_registry" "registry" {
+  project  = data.google_project.project.project_id
+  location = "us-central1"
 }
 
 resource "google_cloud_run_service_iam_binding" "binding" {
