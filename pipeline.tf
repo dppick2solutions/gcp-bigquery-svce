@@ -85,5 +85,5 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
 resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
   bucket = google_storage_bucket.rawfiles.name
   role   = "roles/storage.objectViewer"
-  member = "serviceAccount:service-${data.google_project.project.number}@eventarc.iam.gserviceaccount.com"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-eventarc.iam.gserviceaccount.com"
 }
