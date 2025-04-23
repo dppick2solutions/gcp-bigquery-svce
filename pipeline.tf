@@ -4,53 +4,58 @@ resource "google_storage_bucket_object" "export_to_gcs_zip" {
   source = "functions/export_to_gcs.zip" # Path to local zip archive
 }
 
+## TODO: Enable Cloud Functions API
+## TODO: Enable Cloud Build API
+
 # Deploy the export function that pulls from Azure SQL and writes to GCS
-resource "google_cloudfunctions_function" "export_to_gcs" {
-  name        = "export-sql-to-gcs"
+
+resource "google_cloudfunctions2_function" "export_to_gcs" {
+  name = "export-sql-to-gcs"
+  location = "us-central1"
   description = "Exports Azure SQL data to a GCS bucket"
-  runtime     = "python310"
-  region      = "us-central1"
-  available_memory_mb = 512
 
-  # Service account with GCS write permissions
-  service_account_email = google_service_account.gcf_sa.email
-  entry_point = "export_to_gcs"
+  build_config {
+    runtime = "python310"
+    entry_point = "export_to_gcs"  # Set the entry point 
+    source {
+      storage_source {
+        bucket = google_storage_bucket.rawfiles.name
+        object = google_storage_bucket_object.export_to_gcs_zip.name
+      }
+    }
+  }
 
-  # Code source location (in GCS bucket)
-  source_archive_bucket = google_storage_bucket.rawfiles.name
-  source_archive_object = google_storage_bucket_object.export_to_gcs_zip.name
-
-  # Trigger via HTTP request
-  trigger_http = true
+  service_config {
+    max_instance_count  = 1
+    available_memory    = "256M"
+    timeout_seconds     = 60
+  }
 }
-
 resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
   name   = "gcs_to_bigquery.zip"
   bucket = google_storage_bucket.rawfiles.name
   source = "functions/gcs_to_bigquery.zip" # Path to local zip archive
 }
 
-# Deploy the load function that loads data from GCS to BigQuery
-resource "google_cloudfunctions_function" "gcs_to_bigquery" {
-  name        = "load-gcs-to-bq"
+resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
+  name = "export-sql-to-gcs"
+  location = "us-central1"
   description = "Loads CSV from GCS into a BigQuery table"
-  runtime     = "python310"
-  region      = "us-central1"
-  available_memory_mb = 512
 
-  # Service account with GCS + BigQuery access
-  service_account_email = google_service_account.gcf_sa.email
+  build_config {
+    runtime = "python310"
+    entry_point = "gcs_to_bigquery" 
+    source {
+      storage_source {
+        bucket = google_storage_bucket.rawfiles.name
+        object = google_storage_bucket_object.gcs_to_bigquery_zip.name
+      }
+    }
+  }
 
-  # Function entry point (function name in main.py)
-  entry_point = "gcs_to_bigquery"
-
-  # Code source location (in GCS bucket)
-  source_archive_bucket = google_storage_bucket.rawfiles.name
-  source_archive_object = google_storage_bucket_object.gcs_to_bigquery_zip.name
-
-  # Trigger on new file finalized in GCS
-  event_trigger {
-    event_type = "google.storage.object.finalize"
-    resource   = "projects/_/buckets/svce-rawfiles"
+  service_config {
+    max_instance_count  = 1
+    available_memory    = "256M"
+    timeout_seconds     = 60
   }
 }
