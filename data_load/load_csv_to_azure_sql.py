@@ -14,7 +14,8 @@ connection_string = f"mssql+pyodbc://{username}:{password}@{server}.database.win
 engine = create_engine(connection_string)
 
 # Load CSV
-df = pd.read_csv('sample_energy_usage_data.csv')
+csv_file_path = os.path.join(os.path.dirname(__file__), 'sample_energy_usage_data.csv')
+df = pd.read_csv(csv_file_path)
 
 # Optional: Rename or format columns if needed
 # df.columns = [col.replace(" ", "_") for col in df.columns]
