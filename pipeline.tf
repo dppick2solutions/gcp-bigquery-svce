@@ -76,6 +76,26 @@ resource "google_cloud_run_v2_service" "azure_to_gcs" {
   template {
     containers {
       image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/azure-to-gcs"
+      env {
+        name = AZURE_SQL_SERVER   
+        value = "${var.sql_server_name}.database.windows.net"
+      }
+      env {
+        name = AZURE_SQL_DATABASE
+        value = var.sql_db_name
+      }
+      env {
+        name = AZURE_SQL_USER
+        value = var.sql_admin_username
+      }
+      env {
+        name = AZURE_SQL_PASSWORD
+        value = var.sql_admin_password
+      }
+      env {
+        name = TARGET_BUCKET
+        value = var.gcp_bucket_name
+      }
     }
   }
 }

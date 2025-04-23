@@ -22,12 +22,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
 # Install required Python packages
 RUN pip install --no-cache-dir pandas pyodbc google-cloud-storage
 
-# Set environment variables (optional, can also be passed to Cloud Run as ENV Vars)
-ENV AZURE_SQL_SERVER=your-server
-ENV AZURE_SQL_DATABASE=your-database
-ENV AZURE_SQL_USER=your-username
-ENV AZURE_SQL_PASSWORD=your-password
-ENV TARGET_BUCKET=your-bucket
+EXPOSE 8080
 
 # Copy your application code to the container
 COPY export_to_gcs/ /app
