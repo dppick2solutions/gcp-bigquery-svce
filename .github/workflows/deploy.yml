@@ -102,7 +102,7 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          pip install -r ./data_load/requirements.txt
+          pip install -r data_load/requirements.txt
   
       - name: Run data load script
         env:
@@ -110,5 +110,5 @@ jobs:
           AZURE_SQL_DB: ${{ secrets.AZURE_SQL_DB }}
           AZURE_SQL_USER: ${{ secrets.AZURE_SQL_USER }}
           AZURE_SQL_PASSWORD: ${{ secrets.AZURE_SQL_PASSWORD }}
-        run: python ./data_load/load_csv_to_azure.py
+        run: python data_load/load_csv_to_azure.py
   
