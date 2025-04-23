@@ -20,6 +20,6 @@ resource "google_artifact_registry_repository_iam_binding" "binding" {
   repository = google_artifact_registry_repository.repo.name
   role = "roles/artifactregistry.repoAdmin"
   members = [
-    "bigquery-pipeline-demo@pick2-bigquery-demo.iam.gserviceaccount.com", #parameter later.
+    "serviceAccount:bigquery-pipeline-demo@pick2-bigquery-demo.iam.gserviceaccount.com", #parameter later.
   ]
 }
