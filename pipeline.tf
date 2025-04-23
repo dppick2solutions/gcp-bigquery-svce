@@ -20,11 +20,50 @@ resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
   source = data.archive_file.gcs_to_bigquery.output_path
 }
 
+data "archive_file" "load_to_azure" {
+  type        = "zip"
+  output_path = "load-to-azure.zip"
+  source_dir  = "functions/load_to_azure/"
+}
+resource "google_storage_bucket_object" "load_to_azure_zip" {
+  name   = "load-to-azure.zip"
+  bucket = google_storage_bucket.rawfiles.name
+  source = data.archive_file.load_to_azure.output_path
+}
+
 ## TODO: Enable Cloud Functions API
 ## TODO: Enable Cloud Build API
 ## TODO: Enable EventArc API
 
+resource "google_cloudfunctions2_function" "load_to_azure" {
+  name = "load-to-azure"
+  location = "us-central1"
+  description = "Load Sample Data into Azure SQL"
+
+  build_config {
+    runtime = "python310"
+    entry_point = "load_to_azure"
+    environment_variables = {
+      
+    }
+    source {
+      storage_source {
+        bucket = google_storage_bucket.rawfiles.name
+        object = google_storage_bucket_object.export_to_gcs_zip.name
+      }
+    }
+  }
+
+  service_config {
+    max_instance_count  = 1
+    available_memory    = "256M"
+    timeout_seconds     = 60
+  }
+  depends_on = [ google_storage_bucket_object.export_to_gcs_zip ]
+}
+
 # Deploy the export function that pulls from Azure SQL and writes to GCS
+
 
 resource "google_cloudfunctions2_function" "export_to_gcs" {
   name = "export-sql-to-gcs"
@@ -34,6 +73,9 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
   build_config {
     runtime = "python310"
     entry_point = "export_to_gcs"
+    environment_variables = {
+      
+    }
     source {
       storage_source {
         bucket = google_storage_bucket.rawfiles.name
@@ -87,4 +129,10 @@ resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
   bucket = google_storage_bucket.rawfiles.name
   role   = "roles/storage.objectViewer"
   member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-eventarc.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "gcs_pubsub_publisher_role" {
+  project = data.google_project.project.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com"
 }
