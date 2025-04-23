@@ -36,7 +36,7 @@ module "bigquery" {
 ## Cloud Storage - Files on GCP Side
 ## ------
 resource "google_storage_bucket" "rawfiles" {
-  name     = "svce-rawfiles"
+  name     = "pick2-svce-rawfiles"
   location = "US"
   project  = data.google_project.project.project_id
 }

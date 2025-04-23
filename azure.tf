@@ -15,7 +15,7 @@ resource "azurerm_mssql_server" "sql_server" {
   administrator_login_password = var.sql_admin_password
 }
 
-resource "azurerm_mssql_database" "example" {
+resource "azurerm_mssql_database" "db" {
   name         = "BigQueryDemo"
   server_id    = azurerm_mssql_server.sql_server.id
   collation    = "SQL_Latin1_General_CP1_CI_AS"
