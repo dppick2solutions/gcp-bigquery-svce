@@ -1,19 +1,18 @@
 data "archive_file" "export_to_gcs" {
   type        = "zip"
-  output_path = "function-source.zip"
+  output_path = "export-to-gcs.zip"
   source_dir  = "functions/export_to_gcs/"
 }
-
-data "archive_file" "gcs_to_bigquery" {
-  type        = "zip"
-  output_path = "function-source.zip"
-  source_dir  = "functions/gcs_to_bigquery/"
-}
-
 resource "google_storage_bucket_object" "export_to_gcs_zip" {
   name   = "export_to_gcs.zip"
   bucket = google_storage_bucket.rawfiles.name
   source = data.archive_file.export_to_gcs.output_path
+}
+
+data "archive_file" "gcs_to_bigquery" {
+  type        = "zip"
+  output_path = "gcs-to-bigquery.zip"
+  source_dir  = "functions/gcs_to_bigquery/"
 }
 resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
   name   = "gcs_to_bigquery.zip"
@@ -34,7 +33,7 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
 
   build_config {
     runtime = "python310"
-    entry_point = "export_to_gcs"  # Set the entry point 
+    entry_point = "export_to_gcs"
     source {
       storage_source {
         bucket = google_storage_bucket.rawfiles.name
@@ -48,6 +47,7 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
     available_memory    = "256M"
     timeout_seconds     = 60
   }
+  depends_on = [ google_storage_bucket_object.export_to_gcs_zip ]
 }
 
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
@@ -78,7 +78,7 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
       value = google_storage_bucket.rawfiles.name
     }
   }
-  depends_on = [ google_storage_bucket_iam_member.eventarc_bucket_permissions ]
+  depends_on = [ google_storage_bucket_iam_member.eventarc_bucket_permissions, google_storage_bucket_object.gcs_to_bigquery_zip ]
 }
 
 # Define the storage bucket and the service account for Eventarc
