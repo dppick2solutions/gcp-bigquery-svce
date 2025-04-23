@@ -13,6 +13,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/gcr
 
     steps:
       # Checkout the repository
