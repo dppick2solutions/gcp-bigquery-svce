@@ -75,7 +75,7 @@ resource "google_cloud_run_v2_service" "azure_to_gcs" {
 
   template {
     containers {
-      image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/azure-to-gcs:latest"
+      image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/azure-to-gcs"
     }
   }
 }
@@ -88,7 +88,7 @@ resource "google_cloud_run_v2_job" "gcs_to_bq" {
   template {
     template {
       containers {
-        image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/gcs-to-bq:latest"
+        image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/gcs-to-bq"
       }
     }
   }
