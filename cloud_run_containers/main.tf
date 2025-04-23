@@ -10,7 +10,7 @@ resource "google_artifact_registry_repository" "repo" {
   project       = data.google_project.project.project_id
 
   docker_config {
-    immutable_tags = true
+    immutable_tags = false
   }
 }
 
