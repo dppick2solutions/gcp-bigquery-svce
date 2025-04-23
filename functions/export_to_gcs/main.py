@@ -12,7 +12,7 @@ def export_to_gcs(request):
     driver = '{ODBC Driver 17 for SQL Server}'
 
     engine = create_engine(
-        f"mssql+pyodbc://{username}:{password}@{server}:1433/{database}?driver=ODBC+Driver+17+for+SQL+Server}"
+        f"mssql+pyodbc://{username}:{password}@{server}:1433/{database}?driver=ODBC+Driver+17+for+SQL+Server"
     )
 
     df = pd.read_sql("SELECT * FROM energy_data", engine)
