@@ -5,10 +5,11 @@ import os
 import tempfile
 
 def export_to_gcs(request):
-    server = 'sqlserverdemotg.database.windows.net'
-    database = 'BigQueryDemo'
-    username = 'username'
-    password = 'password'
+    server   = os.getenv('AZURE_SQL_SERVER')
+    database = os.getenv('AZURE_SQL_DB')
+    username = os.getenv('AZURE_SQL_USER')
+    password = os.getenv('AZURE_SQL_PASSWORD')
+    bucket_name = os.getenv('TARGET_BUCKET')
     driver = '{ODBC Driver 17 for SQL Server}'
 
     engine = create_engine(
@@ -17,7 +18,6 @@ def export_to_gcs(request):
 
     df = pd.read_sql("SELECT * FROM energy_data", engine)
 
-    bucket_name = "svce-rawfiles"
     destination_blob_name = "energy_data_export.csv"
 
     with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as temp_file:

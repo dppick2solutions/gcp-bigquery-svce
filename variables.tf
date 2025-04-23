@@ -8,9 +8,21 @@ variable "billing_id" {
   type        = string
 }
 
+variable "gcp_bucket_name" {
+  description = "The name of the GCP bucket."
+  type        = string
+  default     = "pick2-svce-rawfiles"
+}
+
 variable "sql_server_name" {
   description = "The name of the Azure SQL Server."
   type        = string
+}
+
+variable "sql_db_name" {
+  description = "The name of the Azure SQL Database."
+  type        = string
+  default     = "BigQueryDemo"
 }
 
 variable "sql_admin_username" {

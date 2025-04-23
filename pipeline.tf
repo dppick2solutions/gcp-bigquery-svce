@@ -28,15 +28,19 @@ resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
 
 
 resource "google_cloudfunctions2_function" "export_to_gcs" {
-  name = "export-sql-to-gcs"
-  location = "us-central1"
+  name        = "export-sql-to-gcs"
+  location    = "us-central1"
   description = "Exports Azure SQL data to a GCS bucket"
 
   build_config {
-    runtime = "python310"
+    runtime     = "python310"
     entry_point = "export_to_gcs"
     environment_variables = {
-      
+      AZURE_SQL_SERVER   = "${var.sql_server_name}.database.windows.net"
+      AZURE_SQL_DATABASE = var.sql_db_name
+      AZURE_SQL_USER     = var.sql_admin_username
+      AZURE_SQL_PASSWORD = var.sql_admin_password
+      TARGET_BUCKET      = var.gcp_bucket_name
     }
     source {
       storage_source {
@@ -47,23 +51,23 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
   }
 
   service_config {
-    max_instance_count  = 1
-    available_memory    = "256M"
-    timeout_seconds     = 60
+    max_instance_count = 1
+    available_memory   = "256M"
+    timeout_seconds    = 60
   }
-  depends_on = [ google_storage_bucket_object.export_to_gcs_zip ]
+  depends_on = [google_storage_bucket_object.export_to_gcs_zip]
 }
 
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
-  name = "export-to-bigquery"
-  location = "us-central1"
+  name        = "export-to-bigquery"
+  location    = "us-central1"
   description = "Loads CSV from GCS into a BigQuery table"
 
   build_config {
-    runtime = "python310"
-    entry_point = "gcs_to_bigquery" 
+    runtime     = "python310"
+    entry_point = "gcs_to_bigquery"
     source {
-      
+
       storage_source {
         bucket = google_storage_bucket.rawfiles.name
         object = google_storage_bucket_object.gcs_to_bigquery_zip.name
@@ -72,18 +76,18 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
   }
 
   service_config {
-    max_instance_count  = 1
-    available_memory    = "256M"
-    timeout_seconds     = 60
+    max_instance_count = 1
+    available_memory   = "256M"
+    timeout_seconds    = 60
   }
   event_trigger {
     event_type = "google.cloud.storage.object.v1.finalized"
     event_filters {
       attribute = "bucket"
-      value = google_storage_bucket.rawfiles.name
+      value     = google_storage_bucket.rawfiles.name
     }
   }
-  depends_on = [ google_storage_bucket_iam_member.eventarc_bucket_permissions, google_storage_bucket_object.gcs_to_bigquery_zip ]
+  depends_on = [google_storage_bucket_iam_member.eventarc_bucket_permissions, google_storage_bucket_object.gcs_to_bigquery_zip]
 }
 
 # Define the storage bucket and the service account for Eventarc
