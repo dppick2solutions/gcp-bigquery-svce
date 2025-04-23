@@ -15,4 +15,8 @@ terraform {
       version = ">= 4.26.0"
     }
   }
+  backend "gcs" {
+    bucket  = "terraform-state-bq"
+    prefix  = "terraform/state"
+  }
 }
