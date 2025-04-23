@@ -63,7 +63,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: cloud-run-container
+        working-directory: cloud_run_containers
     steps:
       # Checkout the repository
       - name: Checkout Code
