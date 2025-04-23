@@ -40,12 +40,14 @@ jobs:
         id: plan
         run: terraform plan -out=tfplan
         env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
         env:
+            GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
             TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
 
   terraform:
