@@ -40,3 +40,7 @@ variable "azure_tenant_id" {
   description = "The Azure tenant ID."
   type        = string
 }
+variable "allowed_ips" {
+  description = "List of allowed IP addresses for the Azure SQL Server firewall rules."
+  type        = list(string)
+}

@@ -15,6 +15,14 @@ resource "azurerm_mssql_server" "sql_server" {
   administrator_login_password = var.sql_admin_password
 }
 
+resource "azurerm_mssql_firewall_rule" "example" {
+  count            = length(var.allowed_ips)
+  name             = "FirewallRule${count.index}"
+  server_id        = azurerm_mssql_server.example.id
+  start_ip_address = var.allowed_ips[count.index]
+  end_ip_address   = var.allowed_ips[count.index]
+}
+
 resource "azurerm_mssql_database" "db" {
   name         = "BigQueryDemo"
   server_id    = azurerm_mssql_server.sql_server.id

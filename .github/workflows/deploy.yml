@@ -58,6 +58,7 @@ jobs:
           TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
+          
 
       - name: Approve Terraform Plan
         uses: trstringer/manual-approval@v1
@@ -80,51 +81,4 @@ jobs:
             TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
             GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
             TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
-  import-csv:
-    runs-on: ubuntu-latest
-    needs: terraform 
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          pip install pyodbc pandas
-
-      - name: Import CSV to MSSQL
-        env:
-          MSSQL_SERVER: ${{ vars.SQL_SERVER_NAME }}.database.windows.net
-          MSSQL_DATABASE: BigQueryDemo
-          MSSQL_USER: ${{ vars.SQL_ADMIN_USERNAME }}
-          MSSQL_PASSWORD: ${{ secrets.SQL_ADMIN_PASSWORD }}
-        run: |
-          python <<EOF
-          import os
-          import pandas as pd
-          import pyodbc
-
-          # Load CSV
-          df = pd.read_csv('sample_data/sample_energy_usage_data.csv')
-
-          # Connect to MSSQL
-          conn = pyodbc.connect(
-              f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-              f"SERVER={os.getenv('MSSQL_SERVER')};"
-              f"DATABASE={os.getenv('MSSQL_DATABASE')};"
-              f"UID={os.getenv('MSSQL_USER')};"
-              f"PWD={os.getenv('MSSQL_PASSWORD')}"
-          )
-          cursor = conn.cursor()
-
-          # Insert data
-          for index, row in df.iterrows():
-              cursor.execute("INSERT INTO your_table_name (column1, column2) VALUES (?, ?)", row['column1'], row['column2'])
-          conn.commit()
-          conn.close()
-          EOF
+  
