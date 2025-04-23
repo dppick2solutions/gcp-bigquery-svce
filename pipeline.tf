@@ -1,7 +1,24 @@
+data "archive_file" "export_to_gcs" {
+  type        = "zip"
+  output_path = "function-source.zip"
+  source_dir  = "functions/export_to_gcs/"
+}
+
+data "archive_file" "export_to_bigquery" {
+  type        = "zip"
+  output_path = "function-source.zip"
+  source_dir  = "functions/export_to_bigquery/"
+}
+
 resource "google_storage_bucket_object" "export_to_gcs_zip" {
   name   = "export_to_gcs.zip"
   bucket = google_storage_bucket.rawfiles.name
-  source = "functions/export_to_gcs.zip" # Path to local zip archive
+  source = data.archive_file.export_to_gcs.output_path
+}
+resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
+  name   = "gcs_to_bigquery.zip"
+  bucket = google_storage_bucket.rawfiles.name
+  source = data.archive_file.export_to_bigquery.output_path
 }
 
 ## TODO: Enable Cloud Functions API
@@ -30,11 +47,6 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
     available_memory    = "256M"
     timeout_seconds     = 60
   }
-}
-resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
-  name   = "gcs_to_bigquery.zip"
-  bucket = google_storage_bucket.rawfiles.name
-  source = "functions/gcs_to_bigquery.zip" # Path to local zip archive
 }
 
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
