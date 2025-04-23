@@ -35,6 +35,8 @@ jobs:
       # Initialize Terraform
       - name: Terraform Init
         run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       # Validate Terraform configuration
       - name: Terraform Validate
