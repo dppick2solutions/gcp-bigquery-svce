@@ -4,10 +4,10 @@ data "archive_file" "export_to_gcs" {
   source_dir  = "functions/export_to_gcs/"
 }
 
-data "archive_file" "export_to_bigquery" {
+data "archive_file" "gcs_to_bigquery" {
   type        = "zip"
   output_path = "function-source.zip"
-  source_dir  = "functions/export_to_bigquery/"
+  source_dir  = "functions/gcs_to_bigquery/"
 }
 
 resource "google_storage_bucket_object" "export_to_gcs_zip" {
@@ -18,7 +18,7 @@ resource "google_storage_bucket_object" "export_to_gcs_zip" {
 resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
   name   = "gcs_to_bigquery.zip"
   bucket = google_storage_bucket.rawfiles.name
-  source = data.archive_file.export_to_bigquery.output_path
+  source = data.archive_file.gcs_to_bigquery.output_path
 }
 
 ## TODO: Enable Cloud Functions API
