@@ -81,9 +81,6 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
   depends_on = [ google_storage_bucket_iam_member.eventarc_bucket_permissions ]
 }
 
-# Define the Eventarc service account
-data "google_project" "project" {}
-
 # Define the storage bucket and the service account for Eventarc
 resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
   bucket = google_storage_bucket.rawfiles.name
