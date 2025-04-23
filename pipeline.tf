@@ -63,16 +63,6 @@ resource "google_container_registry" "registry" {
   location = "us-central1"
 }
 
-resource "google_cloud_run_service_iam_binding" "binding" {
-  location = google_cloudfunctions2_function.export_to_gcs.location
-  project = data.google_project.project.project_id
-  service = google_cloudfunctions2_function.export_to_gcs.name
-  role = "roles/run.invoker"
-  members = [
-    "allUsers",
-  ]
-}
-
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
   name        = "export-to-bigquery"
   location    = "us-central1"
