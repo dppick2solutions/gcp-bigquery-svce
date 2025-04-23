@@ -40,6 +40,15 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan
+        env:
+          TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
+          TF_VAR_billing_id: ${{ vars.BILLING_ID }}
+          TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
+          TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
+          TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+          TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+          TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
+          TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
 
       - name: Approve Terraform Plan
         uses: trstringer/manual-approval@v1
@@ -51,3 +60,12 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve tfplan
+        env:
+            TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
+            TF_VAR_billing_id: ${{ vars.BILLING_ID }}
+            TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
+            TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
+            TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+            TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+            TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
+            TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
