@@ -57,12 +57,6 @@ resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
 #   }
 #   depends_on = [google_storage_bucket_object.export_to_gcs_zip]
 # }
-
-resource "google_container_registry" "registry" {
-  project  = data.google_project.project.project_id
-  location = "us-central1"
-}
-
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
   name        = "export-to-bigquery"
   location    = "us-central1"
