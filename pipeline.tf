@@ -23,6 +23,7 @@ resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
 
 ## TODO: Enable Cloud Functions API
 ## TODO: Enable Cloud Build API
+## TODO: Enable EventArc API
 
 # Deploy the export function that pulls from Azure SQL and writes to GCS
 
@@ -77,4 +78,15 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
       value = google_storage_bucket.rawfiles.name
     }
   }
+  depends_on = [ google_storage_bucket_iam_member.eventarc_bucket_permissions ]
+}
+
+# Define the Eventarc service account
+data "google_project" "project" {}
+
+# Define the storage bucket and the service account for Eventarc
+resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
+  bucket = google_storage_bucket.rawfiles.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:service-${data.google_project.project.number}@eventarc.iam.gserviceaccount.com"
 }
