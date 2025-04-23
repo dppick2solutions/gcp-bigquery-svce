@@ -82,6 +82,7 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
   }
   event_trigger {
     event_type = "google.cloud.storage.object.v1.finalized"
+    retry_policy = "RETRY_POLICY_DO_NOT_RETRY"
     event_filters {
       attribute = "bucket"
       value     = google_storage_bucket.rawfiles.name
