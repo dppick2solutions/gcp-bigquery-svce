@@ -33,7 +33,7 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
   description = "Exports Azure SQL data to a GCS bucket"
 
   build_config {
-    runtime     = "python310"
+    runtime     = "python312"
     entry_point = "export_to_gcs"
     environment_variables = {
       AZURE_SQL_SERVER   = "${var.sql_server_name}.database.windows.net"
