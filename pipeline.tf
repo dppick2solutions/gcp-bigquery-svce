@@ -1,6 +1,6 @@
 resource "google_storage_bucket_object" "export_to_gcs_zip" {
   name   = "export_to_gcs.zip"
-  bucket = google_storage_bucket.svce_rawfiles.name
+  bucket = google_storage_bucket.rawfiles.name
   source = "functions/export_to_gcs.zip" # Path to local zip archive
 }
 
@@ -17,7 +17,7 @@ resource "google_cloudfunctions_function" "export_to_gcs" {
   entry_point = "export_to_gcs"
 
   # Code source location (in GCS bucket)
-  source_archive_bucket = google_storage_bucket.svce_rawfiles.name
+  source_archive_bucket = google_storage_bucket.rawfiles.name
   source_archive_object = google_storage_bucket_object.export_to_gcs_zip.name
 
   # Trigger via HTTP request
@@ -26,7 +26,7 @@ resource "google_cloudfunctions_function" "export_to_gcs" {
 
 resource "google_storage_bucket_object" "gcs_to_bigquery_zip" {
   name   = "gcs_to_bigquery.zip"
-  bucket = google_storage_bucket.svce_rawfiles.name
+  bucket = google_storage_bucket.rawfiles.name
   source = "functions/gcs_to_bigquery.zip" # Path to local zip archive
 }
 
@@ -45,7 +45,7 @@ resource "google_cloudfunctions_function" "gcs_to_bigquery" {
   entry_point = "gcs_to_bigquery"
 
   # Code source location (in GCS bucket)
-  source_archive_bucket = google_storage_bucket.svce_rawfiles.name
+  source_archive_bucket = google_storage_bucket.rawfiles.name
   source_archive_object = google_storage_bucket_object.gcs_to_bigquery_zip.name
 
   # Trigger on new file finalized in GCS

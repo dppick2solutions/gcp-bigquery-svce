@@ -2,6 +2,11 @@ data "google_project" "project" {
   project_id = var.gcp_project_id
 }
 
+resource "google_service_account" "gcf_sa" {
+  account_id   = "bigquery-pipeline-demo"
+  display_name = "BigQuery Pipeline Demo Account"
+}
+
 resource "google_project_service" "bigquery_api" {
   project = data.google_project.project.project_id
   service = "bigquery.googleapis.com"
