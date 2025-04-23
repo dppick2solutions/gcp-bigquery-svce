@@ -18,7 +18,7 @@ resource "azurerm_mssql_server" "sql_server" {
 resource "azurerm_mssql_firewall_rule" "example" {
   count            = length(var.allowed_ips)
   name             = "FirewallRule${count.index}"
-  server_id        = azurerm_mssql_server.example.id
+  server_id        = azurerm_mssql_server.sql_server.id
   start_ip_address = var.allowed_ips[count.index]
   end_ip_address   = var.allowed_ips[count.index]
 }
