@@ -58,7 +58,7 @@ jobs:
           TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
-          
+          TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
 
       - name: Approve Terraform Plan
         uses: trstringer/manual-approval@v1
@@ -81,4 +81,5 @@ jobs:
             TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
             GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
             TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
+            TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
   
