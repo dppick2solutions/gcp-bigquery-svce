@@ -9,6 +9,7 @@ jobs:
   terraform:
     name: Terraform Workflow
     runs-on: ubuntu-latest
+    environment: main
 
     steps:
       # Checkout the repository
@@ -49,6 +50,8 @@ jobs:
           TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
           TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
           TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
 
       - name: Approve Terraform Plan
         uses: trstringer/manual-approval@v1
@@ -69,3 +72,5 @@ jobs:
             TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
             TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
             TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+            GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+            TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
