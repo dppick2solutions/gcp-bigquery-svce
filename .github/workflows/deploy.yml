@@ -15,8 +15,7 @@ jobs:
       contents: read
     defaults:
       run:
-        shell: bash
-        working-directory: terraform/gcr
+        working-directory: gcp-registry
 
     steps:
       # Checkout the repository
