@@ -51,7 +51,7 @@ resource "google_cloudfunctions2_function" "export_to_gcs" {
 }
 
 resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
-  name = "export-sql-to-gcs"
+  name = "export-to-bigquery"
   location = "us-central1"
   description = "Loads CSV from GCS into a BigQuery table"
 
@@ -59,6 +59,7 @@ resource "google_cloudfunctions2_function" "gcs_to_bigquery" {
     runtime = "python310"
     entry_point = "gcs_to_bigquery" 
     source {
+      
       storage_source {
         bucket = google_storage_bucket.rawfiles.name
         object = google_storage_bucket_object.gcs_to_bigquery_zip.name

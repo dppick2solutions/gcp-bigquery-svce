@@ -42,40 +42,6 @@ module "bigquery" {
 ## ------
 resource "google_storage_bucket" "rawfiles" {
   name     = "pick2-svce-rawfiles"
-  location = "US"
+  location = "us-central1"
   project  = data.google_project.project.project_id
 }
-
-
-## ------
-## CloudRun Import Job
-## ------
-# resource "google_cloud_run_service" "data_pipeline" {
-#   name     = "my-cloudrun-service"
-#   location = "us-central1"
-#   project  = google_project.project.project_id
-
-#   template {
-#     spec {
-#       containers {
-#         image = "gcr.io/my-project/my-container-image:latest"
-#       }
-#     }
-#   }
-# }
-
-# resource "google_project_iam_member" "storage_admin" {
-#   project = data.google_project.project.project_id
-#   role    = "roles/storage.admin"
-#   member  = "serviceAccount:${google_cloud_run_service.data_pipeline.name}@${google_project.project.project_id}.iam.gserviceaccount.com"
-# }
-
-
-## ------
-## IAM
-## ------
-# resource "google_project_iam_member" "bigquery_admin" {
-#   project = data.google_project.project.project_id
-#   role    = "roles/bigquery.admin"
-#   member  = "serviceAccount:${google_cloud_run_service.data_pipeline.name}@${google_project.project.project_id}.iam.gserviceaccount.com"
-# }
