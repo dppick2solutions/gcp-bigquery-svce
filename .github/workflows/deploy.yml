@@ -15,7 +15,7 @@ jobs:
       contents: read
     defaults:
       run:
-        working-directory: cloud-run-container
+        working-directory: cloud_run_containers
 
     steps:
       # Checkout the repository
@@ -83,9 +83,14 @@ jobs:
           password: '${{ secrets.GOOGLE_CREDENTIALS }}'
           registry: 'us-central1-docker.pkg.dev'
           
-      - name: Build and Push Container
+      - name: Build and Push Azure Import Container
         run: |-
-          docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}" ./
+          docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}" -f Export_GCS.Dockerfile ./
+          docker push "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}"
+
+      - name: Build and Push BQ Import Container
+        run: |-
+          docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}" -f Import_BQ.Dockerfile ./
           docker push "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/azure-to-gcs:${{ github.sha }}"
 
   terraform:
