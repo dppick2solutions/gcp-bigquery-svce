@@ -25,7 +25,7 @@ ENV AZURE_SQL_PASSWORD=your-password
 ENV TARGET_BUCKET=your-bucket
 
 # Copy your application code to the container
-COPY functions/export_to_gcs /app
+COPY export_to_gcs/ /app
 
 WORKDIR /app
 
