@@ -28,6 +28,8 @@ def export_to_gcs():
         # Create the connection string for Azure SQL
         connection_string = f"DRIVER={driver};SERVER={server}.database.windows.net;PORT=1433;DATABASE={database};UID={username};PWD={password}"
 
+        log.info(f"Connection string: {connection_string}")
+
         # Establish connection to Azure SQL
         connection = pyodbc.connect(connection_string)
         cursor = connection.cursor()
