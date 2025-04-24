@@ -9,7 +9,7 @@ import google.cloud.logging
 
 def export_to_gcs(request):
     # Set up logging configuration
-    logger = google.cloud.logging.Client()
+    client = google.cloud.logging.Client()
     client.setup_logging()
     logging.basicConfig(level=logging.INFO)
 
