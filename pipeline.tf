@@ -36,16 +36,6 @@ resource "google_cloud_run_v2_job" "azure_to_gcs" {
   }
 }
 
-resource "google_cloud_run_v2_job_iam_binding" "azure_all_users" {
-  project = google_cloud_run_v2_job.azure_to_gcs.project
-  location = google_cloud_run_v2_job.azure_to_gcs.location
-  name = google_cloud_run_v2_job.azure_to_gcs.name
-  role = "roles/run.invoker"
-  members = [
-    "allUsers",
-  ]
-}
-
 resource "google_cloud_run_v2_job" "gcs_to_bq" {
   name     = "gcs-to-bq"
   location = "us-central1"
@@ -58,16 +48,6 @@ resource "google_cloud_run_v2_job" "gcs_to_bq" {
       }
     }
   }
-}
-
-resource "google_cloud_run_v2_job_iam_binding" "gcs_all_users" {
-  project = google_cloud_run_v2_job.gcs_to_bq.project
-  location = google_cloud_run_v2_job.gcs_to_bq.location
-  name = google_cloud_run_v2_job.gcs_to_bq.name
-  role = "roles/run.invoker"
-  members = [
-    "allUsers",
-  ]
 }
 
 # Define the storage bucket and the service account for Eventarc
