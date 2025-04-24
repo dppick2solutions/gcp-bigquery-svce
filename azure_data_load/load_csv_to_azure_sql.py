@@ -29,18 +29,17 @@ try:
     cursor = connection.cursor()
     logging.info("Connection to Azure SQL established successfully.")
 
-    # Load CSV
-    csv_file = 'sample_energy_usage_data.csv'
-    logging.info(f"Attempting to load CSV file: {csv_file}")
-    df = pd.read_csv(csv_file)
-    logging.info(f"CSV file '{csv_file}' loaded successfully with {len(df)} rows.")
+    # Load first CSV
+    csv_file_1 = 'sample_energy_usage_data.csv'
+    logging.info(f"Attempting to load CSV file: {csv_file_1}")
+    df1 = pd.read_csv(csv_file_1)
+    logging.info(f"CSV file '{csv_file_1}' loaded successfully with {len(df1)} rows.")
 
-    # Prepare to create the table
-    table_name = 'energy_data'
-    columns = df.columns
-    column_defs = []
+    # Create first table
+    table_name_1 = 'energy_data'
+    columns_1 = df1.columns
+    column_defs_1 = []
 
-    # Mapping Pandas dtype to SQL data types
     type_mapping = {
         'int64': 'INT',
         'float64': 'FLOAT',
@@ -48,37 +47,63 @@ try:
         'datetime64[ns]': 'DATETIME',
     }
 
-    for col in columns:
-        # Map the pandas dtype to SQL Server type
-        sql_type = type_mapping.get(str(df[col].dtype), 'NVARCHAR(MAX)')
-        column_defs.append(f"{col} {sql_type}")
+    for col in columns_1:
+        sql_type = type_mapping.get(str(df1[col].dtype), 'NVARCHAR(MAX)')
+        column_defs_1.append(f"{col} {sql_type}")
 
-    # Create table query
-    create_table_query = f"CREATE TABLE {table_name} ({', '.join(column_defs)})"
-    logging.info(f"Creating table with the query: {create_table_query}")
+    create_table_query_1 = f"CREATE TABLE {table_name_1} ({', '.join(column_defs_1)})"
+    logging.info(f"Creating table with the query: {create_table_query_1}")
 
-    # Execute the CREATE TABLE query
-    cursor.execute(create_table_query)
+    cursor.execute(create_table_query_1)
     connection.commit()
-    logging.info(f"Table '{table_name}' created successfully.")
+    logging.info(f"Table '{table_name_1}' created successfully.")
 
-    # Prepare SQL statement to insert data into the table
-    placeholders = ', '.join(['?'] * len(df.columns))
-    insert_query = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
+    placeholders_1 = ', '.join(['?'] * len(df1.columns))
+    insert_query_1 = f"INSERT INTO {table_name_1} ({', '.join(columns_1)}) VALUES ({placeholders_1})"
 
-    # Upload data to SQL (insert each row into the table)
-    logging.info(f"Uploading data to Azure SQL table: {table_name}")
-    for _, row in df.iterrows():
-        cursor.execute(insert_query, tuple(row))
-    connection.commit()  # Commit the transaction to the database
-    logging.info(f"Data uploaded successfully to table '{table_name}'.")
+    logging.info(f"Uploading data to Azure SQL table: {table_name_1}")
+    for _, row in df1.iterrows():
+        cursor.execute(insert_query_1, tuple(row))
+    connection.commit()
+    logging.info(f"Data uploaded successfully to table '{table_name_1}'.")
 
-    # Log end of the script
-    logging.info("Script completed successfully. Data inserted into Azure SQL.")
+    # Load second CSV
+    csv_file_2 = 'sample_energy_usage_data_v2.csv'
+    logging.info(f"Attempting to load second CSV file: {csv_file_2}")
+    df2 = pd.read_csv(csv_file_2)
+    logging.info(f"CSV file '{csv_file_2}' loaded successfully with {len(df2)} rows.")
+
+    # Create second table
+    table_name_2 = 'energy_data_v2'
+    columns_2 = df2.columns
+    column_defs_2 = []
+
+    for col in columns_2:
+        sql_type = type_mapping.get(str(df2[col].dtype), 'NVARCHAR(MAX)')
+        column_defs_2.append(f"{col} {sql_type}")
+
+    create_table_query_2 = f"CREATE TABLE {table_name_2} ({', '.join(column_defs_2)})"
+    logging.info(f"Creating second table with the query: {create_table_query_2}")
+
+    cursor.execute(create_table_query_2)
+    connection.commit()
+    logging.info(f"Table '{table_name_2}' created successfully.")
+
+    placeholders_2 = ', '.join(['?'] * len(df2.columns))
+    insert_query_2 = f"INSERT INTO {table_name_2} ({', '.join(columns_2)}) VALUES ({placeholders_2})"
+
+    logging.info(f"Uploading data to Azure SQL table: {table_name_2}")
+    for _, row in df2.iterrows():
+        cursor.execute(insert_query_2, tuple(row))
+    connection.commit()
+    logging.info(f"Data uploaded successfully to table '{table_name_2}'.")
+
+    logging.info("Script completed successfully. Both CSV files inserted into Azure SQL.")
 
 except Exception as e:
     logging.error(f"An error occurred: {e}")
+
 finally:
-    if connection:
+    if 'connection' in locals():
         connection.close()
         logging.info("Connection to Azure SQL closed.")

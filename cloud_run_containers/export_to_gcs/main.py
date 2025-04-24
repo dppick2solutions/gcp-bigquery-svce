@@ -35,39 +35,40 @@ def export_to_gcs():
         # Log successful connection
         logging.info("Connected to Azure SQL successfully.")
 
-        # Query the database
-        query = "SELECT * FROM dbo.energy_data"
-        logging.info(f"Running query: {query}")
-        df = pd.read_sql(query, connection)
+        # Define queries and corresponding file names
+        exports = [
+            ("SELECT * FROM dbo.energy_data", "energy_data_export.csv"),
+            ("SELECT * FROM dbo.energy_data_v2", "energy_data_export2.csv")
+        ]
 
-        sys.stdout.flush()
-
-        # Define the GCS destination
-        destination_blob_name = "energy_data_export.csv"
-
-        # Create a temporary CSV file to store data
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as temp_file:
-            df.to_csv(temp_file.name, index=False)
-            temp_file_path = temp_file.name
-
-        # Upload the CSV file to Google Cloud Storage
+        # Google Cloud Storage client
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(temp_file_path)
 
-        # Clean up the temporary file
-        os.remove(temp_file_path)
+        for query, filename in exports:
+            logging.info(f"Running query: {query}")
+            df = pd.read_sql(query, connection)
 
-        # Log success
-        logging.info(f"Uploaded {destination_blob_name} to bucket {bucket_name}")
+            # Create a temporary CSV file to store data
+            with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as temp_file:
+                df.to_csv(temp_file.name, index=False)
+                temp_file_path = temp_file.name
+
+            # Upload the CSV file to Google Cloud Storage
+            blob = bucket.blob(filename)
+            blob.upload_from_filename(temp_file_path)
+
+            # Clean up the temporary file
+            os.remove(temp_file_path)
+
+            logging.info(f"Uploaded {filename} to bucket {bucket_name}")
 
         # Close the database connection
         connection.close()
         logging.info("Connection to Azure SQL closed.")
 
         sys.stdout.flush()
-        return f"Uploaded {destination_blob_name} to bucket {bucket_name}"
+        return f"Uploaded all tables to bucket {bucket_name}"
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
