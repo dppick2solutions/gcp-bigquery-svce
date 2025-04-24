@@ -11,11 +11,10 @@ def export_to_gcs(request):
     # Set up logging configuration
     client = google.cloud.logging.Client()
     client.setup_logging()
-    logging.basicConfig(level=logging.INFO)
 
     try:
         # Log start of the function
-        logging.info("Starting the data export to GCS.")
+        logging.error("Starting the data export to GCS.")
 
         # Fetch Azure SQL connection details from environment variables
         server   = os.getenv('AZURE_SQL_SERVER')
@@ -34,12 +33,14 @@ def export_to_gcs(request):
         cursor = connection.cursor()
 
         # Log successful connection
-        logging.info("Connected to Azure SQL successfully.")
+        logging.error("Connected to Azure SQL successfully.")
 
         # Query the database
         query = "SELECT * FROM dbo.energy_data"
-        logging.info(f"Running query: {query}")
+        logging.error(f"Running query: {query}")
         df = pd.read_sql(query, connection)
+
+        sys.stdout.flush()
 
         # Define the GCS destination
         destination_blob_name = "energy_data_export.csv"
@@ -59,11 +60,11 @@ def export_to_gcs(request):
         os.remove(temp_file_path)
 
         # Log success
-        logging.info(f"Uploaded {destination_blob_name} to bucket {bucket_name}")
+        logging.error(f"Uploaded {destination_blob_name} to bucket {bucket_name}")
 
         # Close the database connection
         connection.close()
-        logging.info("Connection to Azure SQL closed.")
+        logging.error("Connection to Azure SQL closed.")
 
         sys.stdout.flush()
         return f"Uploaded {destination_blob_name} to bucket {bucket_name}"
