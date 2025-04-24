@@ -37,7 +37,7 @@ def export_to_gcs(request):
         logging.info("Connected to Azure SQL successfully.")
 
         # Query the database
-        query = "SELECT * FROM energy_data"
+        query = "SELECT * FROM dbo.energy_data"
         logging.info(f"Running query: {query}")
         df = pd.read_sql(query, connection)
 
