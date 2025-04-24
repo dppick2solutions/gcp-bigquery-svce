@@ -2,59 +2,71 @@ import pandas as pd
 import os
 import logging
 import pyodbc
+import sys
 from google.cloud import storage
 import tempfile
 
 def export_to_gcs(request):
-    # Log start of the function
-    logging.info("Starting the data export to GCS.")
+    # Set up logging configuration
+    logging.basicConfig(level=logging.INFO)
 
-    # Fetch Azure SQL connection details from environment variables
-    server   = os.getenv('AZURE_SQL_SERVER')
-    database = os.getenv('AZURE_SQL_DATABASE')
-    username = os.getenv('AZURE_SQL_USER')
-    password = os.getenv('AZURE_SQL_PASSWORD')
-    bucket_name = os.getenv('TARGET_BUCKET')
+    try:
+        # Log start of the function
+        logging.info("Starting the data export to GCS.")
 
-    driver = '{ODBC Driver 18 for SQL Server}'
+        # Fetch Azure SQL connection details from environment variables
+        server   = os.getenv('AZURE_SQL_SERVER')
+        database = os.getenv('AZURE_SQL_DATABASE')
+        username = os.getenv('AZURE_SQL_USER')
+        password = os.getenv('AZURE_SQL_PASSWORD')
+        bucket_name = os.getenv('TARGET_BUCKET')
 
-    # Create the connection string for Azure SQL
-    connection_string = f"DRIVER={driver};SERVER={server}.database.windows.net;PORT=1433;DATABASE={database};UID={username};PWD={password}"
+        driver = '{ODBC Driver 18 for SQL Server}'
 
-    # Establish connection to Azure SQL
-    connection = pyodbc.connect(connection_string)
-    cursor = connection.cursor()
+        # Create the connection string for Azure SQL
+        connection_string = f"DRIVER={driver};SERVER={server}.database.windows.net;PORT=1433;DATABASE={database};UID={username};PWD={password}"
 
-    # Log successful connection
-    logging.info("Connected to Azure SQL successfully.")
+        # Establish connection to Azure SQL
+        connection = pyodbc.connect(connection_string)
+        cursor = connection.cursor()
 
-    # Query the database
-    query = "SELECT * FROM energy_data"
-    logging.info(f"Running query: {query}")
-    df = pd.read_sql(query, connection)
+        # Log successful connection
+        logging.info("Connected to Azure SQL successfully.")
 
-    # Define the GCS destination
-    destination_blob_name = "energy_data_export.csv"
+        # Query the database
+        query = "SELECT * FROM energy_data"
+        logging.info(f"Running query: {query}")
+        df = pd.read_sql(query, connection)
 
-    # Create a temporary CSV file to store data
-    with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as temp_file:
-        df.to_csv(temp_file.name, index=False)
-        temp_file_path = temp_file.name
+        # Define the GCS destination
+        destination_blob_name = "energy_data_export.csv"
 
-    # Upload the CSV file to Google Cloud Storage
-    storage_client = storage.Client()
-    bucket = storage_client.bucket(bucket_name)
-    blob = bucket.blob(destination_blob_name)
-    blob.upload_from_filename(temp_file_path)
+        # Create a temporary CSV file to store data
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv', delete=False) as temp_file:
+            df.to_csv(temp_file.name, index=False)
+            temp_file_path = temp_file.name
 
-    # Clean up the temporary file
-    os.remove(temp_file_path)
+        # Upload the CSV file to Google Cloud Storage
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(destination_blob_name)
+        blob.upload_from_filename(temp_file_path)
 
-    # Log success
-    logging.info(f"Uploaded {destination_blob_name} to bucket {bucket_name}")
+        # Clean up the temporary file
+        os.remove(temp_file_path)
 
-    # Close the database connection
-    connection.close()
-    logging.info("Connection to Azure SQL closed.")
+        # Log success
+        logging.info(f"Uploaded {destination_blob_name} to bucket {bucket_name}")
 
-    return f"Uploaded {destination_blob_name} to bucket {bucket_name}"
+        # Close the database connection
+        connection.close()
+        logging.info("Connection to Azure SQL closed.")
+
+        sys.stdout.flush()
+        return f"Uploaded {destination_blob_name} to bucket {bucket_name}"
+
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+        sys.stdout.flush()
+        raise  # Optionally re-raise the exception to propagate the error
