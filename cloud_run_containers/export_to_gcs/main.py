@@ -26,9 +26,7 @@ def export_to_gcs():
         driver = '{ODBC Driver 17 for SQL Server}'
 
         # Create the connection string for Azure SQL
-        connection_string = f"DRIVER={driver};SERVER={server}.database.windows.net;PORT=1433;DATABASE={database};UID={username};PWD={password}"
-
-        logging.info(f"Connection string: {connection_string}")
+        connection_string = f"DRIVER={driver};SERVER={server};PORT=1433;DATABASE={database};UID={username};PWD={password}"
 
         # Establish connection to Azure SQL
         connection = pyodbc.connect(connection_string)
