@@ -16,7 +16,7 @@ def export_to_gcs(request):
     password = os.getenv('AZURE_SQL_PASSWORD')
     bucket_name = os.getenv('TARGET_BUCKET')
 
-    driver = '{ODBC Driver 17 for SQL Server}'
+    driver = '{ODBC Driver 18 for SQL Server}'
 
     # Create the connection string for Azure SQL
     connection_string = f"DRIVER={driver};SERVER={server}.database.windows.net;PORT=1433;DATABASE={database};UID={username};PWD={password}"
