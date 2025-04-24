@@ -16,7 +16,7 @@ def gcs_to_bigquery(bucket_name, file_name):
 
     # Load into BigQuery
     bq_client = bigquery.Client(project="pick2-bigquery-demo")
-    table_id = "pick2-svce-demo.svce_demo.energy_data"
+    table_id = "pick2-bigquery-demo.svce_demo.energy_data"
 
     job = bq_client.load_table_from_dataframe(df, table_id)
     job.result()
