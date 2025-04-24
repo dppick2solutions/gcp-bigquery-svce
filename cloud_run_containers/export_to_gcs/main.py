@@ -7,7 +7,7 @@ from google.cloud import storage
 import tempfile
 import google.cloud.logging
 
-def export_to_gcs(request):
+def export_to_gcs():
     # Set up logging configuration
     client = google.cloud.logging.Client()
     client.setup_logging()
@@ -74,3 +74,10 @@ def export_to_gcs(request):
 
         sys.stdout.flush()
         raise  # Optionally re-raise the exception to propagate the error
+
+def main():
+    # Explicitly call the export_to_gcs function
+    export_to_gcs()
+
+if __name__ == '__main__':
+    main()
