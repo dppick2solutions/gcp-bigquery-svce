@@ -25,8 +25,8 @@ def gcs_to_bigquery(bucket_name, file_name):
 
 
 def main():
-    bucket_name = os.getenv("BUCKET_NAME")
-    file_name = os.getenv("FILE_NAME")
+    bucket_name = "pick2-svce-rawfiles"
+    file_name = "energy_data_export.csv"
 
     if not bucket_name or not file_name:
         raise ValueError("Both BUCKET_NAME and FILE_NAME environment variables must be set")
