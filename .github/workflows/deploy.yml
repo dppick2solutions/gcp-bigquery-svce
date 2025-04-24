@@ -93,81 +93,81 @@ jobs:
           docker build -t "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/gcs-to-bq" -f Import_BQ.Dockerfile ./
           docker push "us-central1-docker.pkg.dev/pick2-bigquery-demo/pick2-bq-demo/gcs-to-bq"
 
-  terraform:
-    name: Terraform Workflow
-    runs-on: ubuntu-latest
-    needs: docker-push
-    environment: main
-    permissions: 
-        id-token: write
-        contents: read  
-        issues: write
+  # terraform:
+  #   name: Terraform Workflow
+  #   runs-on: ubuntu-latest
+  #   needs: docker-push
+  #   environment: main
+  #   permissions: 
+  #       id-token: write
+  #       contents: read  
+  #       issues: write
 
-    steps:
-      # Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v3
+  #   steps:
+  #     # Checkout the repository
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v3
 
-      - name: Azure Login
-        uses: Azure/login@v1.5.0
-        with:
-          client-id: ${{ vars.ARM_CLIENT_ID }}
-          tenant-id: ${{ vars.ARM_TENANT_ID }}
-          subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+  #     - name: Azure Login
+  #       uses: Azure/login@v1.5.0
+  #       with:
+  #         client-id: ${{ vars.ARM_CLIENT_ID }}
+  #         tenant-id: ${{ vars.ARM_TENANT_ID }}
+  #         subscription-id: ${{ vars.ARM_SUBSCRIPTION_ID }}
 
-      # Set up Terraform
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.11.0
+  #     # Set up Terraform
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_version: 1.11.0
 
-      # Initialize Terraform
-      - name: Terraform Init
-        run: terraform init
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  #     # Initialize Terraform
+  #     - name: Terraform Init
+  #       run: terraform init
+  #       env:
+  #         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
-      # Validate Terraform configuration
-      - name: Terraform Validate
-        run: terraform validate
+  #     # Validate Terraform configuration
+  #     - name: Terraform Validate
+  #       run: terraform validate
 
-      # Plan Terraform changes
-      - name: Terraform Plan
-        id: plan
-        run: terraform plan -out=tfplan
-        env:
-          TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
-          TF_VAR_billing_id: ${{ vars.BILLING_ID }}
-          TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
-          TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
-          TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
-          TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
-          TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
-          TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
-          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-          TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
-          TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
+  #     # Plan Terraform changes
+  #     - name: Terraform Plan
+  #       id: plan
+  #       run: terraform plan -out=tfplan
+  #       env:
+  #         TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
+  #         TF_VAR_billing_id: ${{ vars.BILLING_ID }}
+  #         TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
+  #         TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
+  #         TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+  #         TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+  #         TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
+  #         TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+  #         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  #         TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
+  #         TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
 
-      - name: Approve Terraform Plan
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.token }}
-          approvers: dppick2solutions
+  #     - name: Approve Terraform Plan
+  #       uses: trstringer/manual-approval@v1
+  #       with:
+  #         secret: ${{ github.token }}
+  #         approvers: dppick2solutions
 
-      # Apply Terraform changes (only on push to main)
-      - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
-        env:
-            TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
-            TF_VAR_billing_id: ${{ vars.BILLING_ID }}
-            TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
-            TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
-            TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
-            TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
-            TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
-            TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
-            GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-            TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
-            TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
+  #     # Apply Terraform changes (only on push to main)
+  #     - name: Terraform Apply
+  #       if: github.ref == 'refs/heads/main'
+  #       run: terraform apply -auto-approve tfplan
+  #       env:
+  #           TF_VAR_org_id: ${{ vars.GCP_ORG_ID }}
+  #           TF_VAR_billing_id: ${{ vars.BILLING_ID }}
+  #           TF_VAR_sql_server_name: ${{ vars.SQL_SERVER_NAME }}
+  #           TF_VAR_sql_admin_username: ${{ vars.SQL_ADMIN_USERNAME }}
+  #           TF_VAR_sql_admin_password: ${{ secrets.SQL_ADMIN_PASSWORD }}
+  #           TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+  #           TF_VAR_azure_client_id: ${{ vars.ARM_CLIENT_ID }}
+  #           TF_VAR_azure_subscription_id: ${{ vars.ARM_SUBSCRIPTION_ID }}
+  #           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+  #           TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
+  #           TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
   
