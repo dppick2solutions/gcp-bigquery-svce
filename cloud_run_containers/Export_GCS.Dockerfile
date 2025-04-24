@@ -20,7 +20,7 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
     apt-get install -y libgssapi-krb5-2
 
 # Install required Python packages
-RUN pip install --no-cache-dir pandas pyodbc google-cloud-storage
+RUN pip install --no-cache-dir pandas pyodbc google-cloud-storage google-cloud-logging
 
 # Copy your application code to the container
 COPY export_to_gcs/ /app
