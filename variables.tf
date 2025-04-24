@@ -3,6 +3,11 @@ variable "org_id" {
   type        = string
 }
 
+variable "resource_group_name" {
+  description = "The name of the Azure resource group."
+  type        = string
+}
+
 variable "billing_id" {
   description = "The billing account ID for the GCP project"
   type        = string

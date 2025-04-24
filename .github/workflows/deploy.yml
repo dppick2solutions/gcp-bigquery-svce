@@ -45,6 +45,7 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
           TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+          TF_VAR_repository_id: ${{ vars.GCP_REPOSITORY_ID }}
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
@@ -52,6 +53,7 @@ jobs:
         env:
             GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
             TF_VAR_gcp_project_id: ${{ vars.GCP_PROJECT_ID }}
+            TF_VAR_repository_id: ${{ vars.GCP_REPOSITORY_ID }}
 
   docker-push:
     name: Push Docker Image
@@ -147,6 +149,7 @@ jobs:
   #         GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   #         TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
   #         TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
+  #         TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP_NAME }}
 
   #     - name: Approve Terraform Plan
   #       uses: trstringer/manual-approval@v1
@@ -170,4 +173,5 @@ jobs:
   #           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
   #           TF_VAR_azure_tenant_id: ${{ vars.ARM_TENANT_ID }}
   #           TF_VAR_allowed_ips: ${{ vars.ALLOWED_IPS }}
+  #           TF_VAR_resource_group_name: ${{ vars.RESOURCE_GROUP_NAME }}
   

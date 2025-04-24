@@ -2,7 +2,7 @@
 ## Azure SQL
 ## ------
 resource "azurerm_resource_group" "bq_demo" {
-  name     = "pick2_bq_demo"
+  name     = var.resource_group_name
   location = "Central US"
 }
 

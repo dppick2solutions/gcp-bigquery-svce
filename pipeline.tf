@@ -50,6 +50,8 @@ resource "google_cloud_run_v2_job" "gcs_to_bq" {
   }
 }
 
+# todo: compute storage account needs BQ access.
+
 # Define the storage bucket and the service account for Eventarc
 resource "google_storage_bucket_iam_member" "eventarc_bucket_permissions" {
   bucket = google_storage_bucket.rawfiles.name
