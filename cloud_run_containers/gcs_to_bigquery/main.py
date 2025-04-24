@@ -16,8 +16,8 @@ def gcs_to_bigquery(event, context):
         blob.download_to_filename(temp_file.name)
         df = pd.read_csv(temp_file.name)
 
-    bq_client = bigquery.Client(project="pick2-svce-demo")
-    table_id = "pick2-svce-demo.svce-rawfiles.energy_data"
+    bq_client = bigquery.Client(project="pick2-bigquery-demo")
+    table_id = "pick2-svce-demo.svce_demo.energy_data"
 
     job = bq_client.load_table_from_dataframe(df, table_id)
     job.result()
