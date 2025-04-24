@@ -22,8 +22,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
 # Install required Python packages
 RUN pip install --no-cache-dir pandas pyodbc google-cloud-storage
 
-EXPOSE 8080
-
 # Copy your application code to the container
 COPY export_to_gcs/ /app
 

@@ -3,14 +3,13 @@
 ## TODO: Enable EventArc API
 
 # Deploy the export function that pulls from Azure SQL and writes to GCS
-resource "google_cloud_run_v2_service" "azure_to_gcs" {
+resource "google_cloud_run_v2_job" "azure_to_gcs" {
   name     = "azure-to-gcs"
   location = "us-central1"
   deletion_protection = false
-  ingress = "INGRESS_TRAFFIC_ALL"
-
   template {
-    containers {
+    template{
+      containers {
       image = "us-central1-docker.pkg.dev/${data.google_project.project.project_id}/pick2-bq-demo/azure-to-gcs"
       env {
         name = "AZURE_SQL_SERVER"   
@@ -33,13 +32,14 @@ resource "google_cloud_run_v2_service" "azure_to_gcs" {
         value = var.gcp_bucket_name
       }
     }
+    }
   }
 }
 
-resource "google_cloud_run_v2_service_iam_binding" "all_users" {
-  project = google_cloud_run_v2_service.azure_to_gcs.project
-  location = google_cloud_run_v2_service.azure_to_gcs.location
-  name = google_cloud_run_v2_service.azure_to_gcs.name
+resource "google_cloud_run_v2_job_iam_binding" "azure_all_users" {
+  project = google_cloud_run_v2_job.azure_to_gcs.project
+  location = google_cloud_run_v2_job.azure_to_gcs.location
+  name = google_cloud_run_v2_job.azure_to_gcs.name
   role = "roles/run.invoker"
   members = [
     "allUsers",
@@ -58,6 +58,16 @@ resource "google_cloud_run_v2_job" "gcs_to_bq" {
       }
     }
   }
+}
+
+resource "google_cloud_run_v2_job_iam_binding" "gcs_all_users" {
+  project = google_cloud_run_v2_job.gcs_to_bq.project
+  location = google_cloud_run_v2_job.gcs_to_bq.location
+  name = google_cloud_run_v2_job.gcs_to_bq.name
+  role = "roles/run.invoker"
+  members = [
+    "allUsers",
+  ]
 }
 
 # Define the storage bucket and the service account for Eventarc
